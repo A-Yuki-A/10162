@@ -9,34 +9,29 @@ Original file is located at
 
 import streamlit as st
 
-# タイトルを表示
 st.title("進数変換ツール")
 
-# ユーザーから入力を受け取る
-input_value = st.text_input("数値を入力してください（例: 10進数なら「123」、2進数なら「0b1111011」、16進数なら「0x7B」）")
+# 入力値と進数選択のUI
+input_value = st.text_input("数値を入力してください")
+base_selection = st.radio("入力した値の進数を選んでください", ("10進数", "2進数", "16進数"))
 
 if input_value:
     try:
-        # 入力の形式を判定して10進数に変換
-        # 2進数の場合は「0b」から始まる
-        if input_value.startswith("0b"):
-            base = 2
-            decimal_value = int(input_value, 2)
-        # 16進数の場合は「0x」から始まる
-        elif input_value.startswith("0x"):
-            base = 16
-            decimal_value = int(input_value, 16)
-        else:
-            # 数字のみの場合は10進数として扱う
+        # 入力された進数に応じて10進数に変換
+        if base_selection == "10進数":
             decimal_value = int(input_value)
-            base = 10
+        elif base_selection == "2進数":
+            decimal_value = int(input_value, 2)
+        elif base_selection == "16進数":
+            decimal_value = int(input_value, 16)
 
-        st.write("### 入力された値の各進数表記")
+        # 各進数への変換結果の表示
+        st.write("### 各進数での表記")
         st.write("**10進数:**", decimal_value)
         st.write("**2進数:**", bin(decimal_value))
         st.write("**16進数:**", hex(decimal_value))
 
-        # 10進数から2進数への変換過程の表示（割り算の繰り返しの方法）
+        # 計算過程の表示（10進数から2進数への変換例）
         st.write("### 10進数から2進数への変換過程")
         n = decimal_value
         steps = []
@@ -48,9 +43,10 @@ if input_value:
                 remainder = n % 2  # 余り
                 steps.append(f"{n} ÷ 2 = {quotient} 余り {remainder}")
                 n = quotient
-        # 変換過程を上から下に表示
+
+        # 結果の下に計算過程を表示
         for step in steps:
             st.write(step)
 
     except ValueError:
-        st.error("数値の形式が正しくありません。入力形式（例: 123, 0b1111011, 0x7B）を確認してください。")
+        st.error("入力された値が正しい形式ではありません。")
